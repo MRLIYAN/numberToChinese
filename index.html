@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #result,#money{
+            margin:20px;
+            display: inline-block;
+            color:brown;
+        }
+    </style>
+</head>
+
+<body>
+    请输入数字：<input id="number" type="text">
+    <input type="button" value="点击转换" onclick="numTranslateCh()">
+    <br>
+    转换中文：<span id="result"></span>
+    <br>
+    转换人民币（小数点只取后两位）：<span id="money"></span>
+
+    <script>
+        //数字转变中文
+        function numTranslateCh() {
+            let numVal = document.getElementById('number').value;//获取数字，
+            let numCh = numberTransformCh(numVal);
+            let money = numberTransformCh(numVal, isMoney=true);
+
+            document.getElementById("result").innerHTML = numCh;
+            document.getElementById("money").innerHTML = money;
+        }
+
+        function numberTransformCh(number, isMoney) {
+            if (!number) {
+                alert("不能为空")
+                return;
+            }
+            if (isNaN(number)) {
+                alert("请输入数字")
+                reutrn;
+            }
+            let numString = String(number).trim(); //数字转换为字符串
+            let result = '';
+            let dotNumPrefix = ''; //小数点之前的数
+            let dotNumSuffix = ''; //小数点之后的数
+            let zhArr = !isMoney ? ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'] : ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖']; // 数字对应中文
+            let baseArr = !isMoney ? ['', '十', '百', '千'] : ['', '拾', '佰', '仟']; //单位转变规律，每隔一千，换个单位，个位空
+            let unitArr = ['', '万', '亿', '兆', '京', '垓', '秭', '穰', '沟', '涧', '正', '载', '极', '恒河沙', '阿僧祗', '那由他'];//单位递增规律，每隔千一进制，第一个为个位（个十百千），空
+
+            //判断是否有小数点
+            if (numString.includes('.')) {
+                dotNumPrefix = numString.split('.')[0];
+                dotNumSuffix = numString.split('.')[1];
+            } else {
+                dotNumPrefix = numString;
+            }
+            console.log("小数点前数字：" + dotNumPrefix);
+            console.log("小数点后数字：" + dotNumSuffix);
+
+            let numPrefixSplit = [];
+
+            //数字从后向前每四位一拆分            
+            for (let i = dotNumPrefix.length; i > 0; i = i - 4) {
+                let arr = '';
+                if (i - 4 >= 0) {
+                    arr = dotNumPrefix.slice(i - 4, i);
+                } else {
+                    arr = dotNumPrefix.slice(0, i);
+                }
+                numPrefixSplit.unshift(arr);
+            }
+            console.log("数字每四位拆分为数组");
+            console.log(numPrefixSplit)
+
+            let resultArr = [];
+            //按照拆分的四位数进行倒序转换，为了索引和上面的unitArr单位索引相对应
+            numPrefixSplit.reverse().forEach((item, index) => {
+                let elResult = item.split('').reverse().map((el, i) => {
+                    /**
+                     * 索引为0的即个位数，直接转换对应汉字，或者自身值就是0，也不拼接单位，直接转换汉字零（因为没有零十，零百，零千）
+                     * 其他，后面拼接单位（个十百千）
+                     * */
+                    el = (i === 0 || Number(el) === 0) ? zhArr[Number(el)] : zhArr[Number(el)] + baseArr[i];
+                    // console.log(el);
+                    return el;
+                }).reverse().join(''); // 倒叙回来数组，拼接成字符串
+
+                // 如果以一十开头，可以改为十，人民币同理
+                elResult = !isMoney ? elResult.replace(/^一十/, '十') : elResult.replace(/^壹拾/, '拾'); 
+                // 如果有多位相邻的零，只写一个零即可
+                elResult = elResult.replace(/零+/, '零'); 
+                /**
+                 * 先判断这个四位数是不是本身不是零，如果是零，零匹配成空格了
+                 * 不等于零要加四位数间隔的单位（万，亿.....）
+                 * */
+                if (elResult !== '零') {
+                    // elResult = elResult.replace(/^零/, ''); // 如果以零开头，可省略，这里是内项，不要判断此条件，有可能会有xxx零x的情况，最后结果判断即可。
+                    // 如果以零结尾，可省略
+                    elResult = elResult.replace(/零$/, '');
+                    //单位追加，同上
+                    elResult = elResult + unitArr[index]
+                }
+
+                resultArr.push(elResult)
+
+            });
+            //最终结果数组倒转即正确顺序，转为字符串。
+            result = resultArr.reverse().join('');
+
+            // 如果以一十开头，可以改为十
+            result = !isMoney ? result.replace(/^一十/, '十') : result.replace(/^壹拾/, '拾'); 
+            // 如果有多位相邻的零，只写一个零即可
+            result = result.replace(/零+/, '零'); 
+            //这里零判断同上
+            if (result !== '零') {
+                // 如果以零开头，可省略
+                result = result.replace(/^零/, ''); 
+                // 如果以零结尾，可省略
+                result = result.replace(/零$/, ''); 
+            }
+
+            //以上小数点前面的处理完毕，小数点后就对应转中文即可
+            let dotSuffixResult = '';
+            if(dotNumSuffix.length > 0){
+                dotSuffixResult = !isMoney ? '点' : '';
+                let dotNumSuffixArr = dotNumSuffix.split('')
+                // 非人民币金额，直接循环转对应中文
+                if(!isMoney){
+                    dotNumSuffixArr.forEach(item => {
+                        dotSuffixResult = dotSuffixResult + zhArr[Number(item)]
+                    })
+                }else{
+                    let dotSuffixMoneyUnit = ['角','分']
+                    //人民币金额只要前两位
+                    for (let i = 0; i < 2; i++) {
+                        dotSuffixResult = dotSuffixResult + (zhArr[dotNumSuffixArr[i]] || '') + (zhArr[dotNumSuffixArr[i]] ? dotSuffixMoneyUnit[i] : '');
+                    }
+                }
+                
+            }
+
+            result = !isMoney ? result + dotSuffixResult : result + '元' + dotSuffixResult;
+            console.log("----------");
+            console.log(resultArr);
+            console.log(result);
+
+            return result;
+
+        }
+
+
+    </script>
+</body>
+
+</html>
