@@ -42,6 +42,10 @@
                 alert("请输入数字")
                 return;
             }
+            if (String(number).length > 64) {
+                alert("目前支持64位以内数字")
+                return;
+            }
             let numString = String(number).trim(); //数字转换为字符串
             let result = '';
             let dotNumPrefix = ''; //小数点之前的数
