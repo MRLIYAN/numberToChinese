@@ -15,7 +15,7 @@
 </head>
 
 <body>
-    请输入数字：<input id="number" type="text">
+    请输入数字：<input id="number" type="text" style="width:260px;">
     <input type="button" value="点击转换" onclick="numTranslateCh()">
     <br>
     转换中文：<span id="result"></span>
@@ -27,10 +27,10 @@
         function numTranslateCh() {
             let numVal = document.getElementById('number').value;//获取数字，
             let numCh = numberTransformCh(numVal);
-            let money = numberTransformCh(numVal, isMoney=true);
+            let money = numberTransformCh(numVal, true);
 
-            document.getElementById("result").innerHTML = numCh;
-            document.getElementById("money").innerHTML = money;
+            document.getElementById("result").innerHTML = numCh || '';
+            document.getElementById("money").innerHTML = money || '';
         }
 
         function numberTransformCh(number, isMoney) {
@@ -40,7 +40,7 @@
             }
             if (isNaN(number)) {
                 alert("请输入数字")
-                reutrn;
+                return;
             }
             let numString = String(number).trim(); //数字转换为字符串
             let result = '';
