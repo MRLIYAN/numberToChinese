@@ -6,17 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        #number{
+            width:300px;
+            line-height: 30px;
+            padding:0 10px;
+            font-size: 16px;
+        }
         #result,#money{
             margin:20px;
             display: inline-block;
             color:brown;
         }
+        #btn{
+            height: 30px;
+            font-size: 16px;
+        }
     </style>
 </head>
 
 <body>
-    请输入数字：<input id="number" type="text" style="width:260px;">
-    <input type="button" value="点击转换" onclick="numTranslateCh()">
+    请输入数字：<input id="number" type="text">
+    <input id="btn" type="button" value="点击转换" onclick="numTranslateCh()" />
     <br>
     转换中文：<span id="result"></span>
     <br>
