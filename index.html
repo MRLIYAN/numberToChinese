@@ -104,9 +104,9 @@
                 }).reverse().join(''); // 倒叙回来数组，拼接成字符串
 
                 // 如果以一十开头，可以改为十，人民币同理
-                elResult = !isMoney ? elResult.replace(/^一十/, '十') : elResult.replace(/^壹拾/, '拾'); 
+                elResult = !isMoney ? elResult.replace(/^一十/g, '十') : elResult.replace(/^壹拾/g, '拾'); 
                 // 如果有多位相邻的零，只写一个零即可
-                elResult = elResult.replace(/零+/, '零'); 
+                elResult = elResult.replace(/零+/g, '零'); 
                 /**
                  * 先判断这个四位数是不是本身不是零，如果是零，零匹配成空格了
                  * 不等于零要加四位数间隔的单位（万，亿.....）
@@ -114,7 +114,7 @@
                 if (elResult !== '零') {
                     // elResult = elResult.replace(/^零/, ''); // 如果以零开头，可省略，这里是内项，不要判断此条件，有可能会有xxx零x的情况，最后结果判断即可。
                     // 如果以零结尾，可省略
-                    elResult = elResult.replace(/零$/, '');
+                    elResult = elResult.replace(/零$/g, '');
                     //单位追加，同上
                     elResult = elResult + unitArr[index]
                 }
@@ -124,17 +124,17 @@
             });
             //最终结果数组倒转即正确顺序，转为字符串。
             result = resultArr.reverse().join('');
-
+            debugger;
             // 如果以一十开头，可以改为十
-            result = !isMoney ? result.replace(/^一十/, '十') : result.replace(/^壹拾/, '拾'); 
+            result = !isMoney ? result.replace(/^一十/g, '十') : result.replace(/^壹拾/g, '拾'); 
             // 如果有多位相邻的零，只写一个零即可
-            result = result.replace(/零+/, '零'); 
+            result = result.replace(/零+/g, '零'); 
             //这里零判断同上
             if (result !== '零') {
                 // 如果以零开头，可省略
-                result = result.replace(/^零/, ''); 
+                result = result.replace(/^零/g, ''); 
                 // 如果以零结尾，可省略
-                result = result.replace(/零$/, ''); 
+                result = result.replace(/零$/g, ''); 
             }
 
             //以上小数点前面的处理完毕，小数点后就对应转中文即可
