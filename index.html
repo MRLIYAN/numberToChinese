@@ -124,7 +124,6 @@
             });
             //最终结果数组倒转即正确顺序，转为字符串。
             result = resultArr.reverse().join('');
-            debugger;
             // 如果以一十开头，可以改为十
             result = !isMoney ? result.replace(/^一十/g, '十') : result.replace(/^壹拾/g, '拾'); 
             // 如果有多位相邻的零，只写一个零即可
