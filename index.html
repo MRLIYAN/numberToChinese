@@ -6,18 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        #number{
-            width:300px;
+        #number {
+            width: 300px;
             line-height: 30px;
-            padding:0 10px;
+            padding: 0 10px;
             font-size: 16px;
         }
-        #result,#money{
-            margin:20px;
+
+        #result,
+        #money {
+            margin: 20px;
             display: inline-block;
-            color:brown;
+            color: brown;
         }
-        #btn{
+
+        #btn {
             height: 30px;
             font-size: 16px;
         }
@@ -52,10 +55,7 @@
                 alert("请输入数字")
                 return;
             }
-            if (String(number).length > 64) {
-                alert("目前支持64位以内数字")
-                return;
-            }
+
             let numString = String(number).trim(); //数字转换为字符串
             let result = '';
             let dotNumPrefix = ''; //小数点之前的数
@@ -63,6 +63,12 @@
             let zhArr = !isMoney ? ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'] : ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖']; // 数字对应中文
             let baseArr = !isMoney ? ['', '十', '百', '千'] : ['', '拾', '佰', '仟']; //单位转变规律，每隔一千，换个单位，个位空
             let unitArr = ['', '万', '亿', '兆', '京', '垓', '秭', '穰', '沟', '涧', '正', '载', '极', '恒河沙', '阿僧祗', '那由他'];//单位递增规律，每隔千一进制，第一个为个位（个十百千），空
+
+            let maxLength = unitArr.length * baseArr.length;
+            if (String(number).length > maxLength) {
+                alert("目前支持" + maxLength + "位以内数字")
+                return;
+            }
 
             //判断是否有小数点
             if (numString.includes('.')) {
@@ -77,7 +83,7 @@
             let numPrefixSplit = [];
 
             //数字从后向前每四位一拆分  
-            let step = 4;          
+            let step = 4;
             for (let i = dotNumPrefix.length; i > 0; i = i - step) {
                 let arr = '';
                 if (i - step >= 0) {
@@ -104,9 +110,9 @@
                 }).reverse().join(''); // 倒叙回来数组，拼接成字符串
 
                 // 如果以一十开头，可以改为十，人民币同理
-                elResult = !isMoney ? elResult.replace(/^一十/g, '十') : elResult.replace(/^壹拾/g, '拾'); 
+                elResult = !isMoney ? elResult.replace(/^一十/g, '十') : elResult.replace(/^壹拾/g, '拾');
                 // 如果有多位相邻的零，只写一个零即可
-                elResult = elResult.replace(/零+/g, '零'); 
+                elResult = elResult.replace(/零+/g, '零');
                 /**
                  * 先判断这个四位数是不是本身不是零，如果是零，零匹配成空格了
                  * 不等于零要加四位数间隔的单位（万，亿.....）
@@ -125,35 +131,35 @@
             //最终结果数组倒转即正确顺序，转为字符串。
             result = resultArr.reverse().join('');
             // 如果以一十开头，可以改为十
-            result = !isMoney ? result.replace(/^一十/g, '十') : result.replace(/^壹拾/g, '拾'); 
+            result = !isMoney ? result.replace(/^一十/g, '十') : result.replace(/^壹拾/g, '拾');
             // 如果有多位相邻的零，只写一个零即可
-            result = result.replace(/零+/g, '零'); 
+            result = result.replace(/零+/g, '零');
             //这里零判断同上
             if (result !== '零') {
                 // 如果以零开头，可省略
-                result = result.replace(/^零/g, ''); 
+                result = result.replace(/^零/g, '');
                 // 如果以零结尾，可省略
-                result = result.replace(/零$/g, ''); 
+                result = result.replace(/零$/g, '');
             }
 
             //以上小数点前面的处理完毕，小数点后就对应转中文即可
             let dotSuffixResult = '';
-            if(dotNumSuffix.length > 0){
+            if (dotNumSuffix.length > 0) {
                 dotSuffixResult = !isMoney ? '点' : '';
                 let dotNumSuffixArr = dotNumSuffix.split('')
                 // 非人民币金额，直接循环转对应中文
-                if(!isMoney){
+                if (!isMoney) {
                     dotNumSuffixArr.forEach(item => {
                         dotSuffixResult = dotSuffixResult + zhArr[Number(item)]
                     })
-                }else{
-                    let dotSuffixMoneyUnit = ['角','分']
+                } else {
+                    let dotSuffixMoneyUnit = ['角', '分']
                     //人民币金额只要前两位
                     for (let i = 0; i < 2; i++) {
                         dotSuffixResult = dotSuffixResult + (zhArr[dotNumSuffixArr[i]] || '') + (zhArr[dotNumSuffixArr[i]] ? dotSuffixMoneyUnit[i] : '');
                     }
                 }
-                
+
             }
 
             result = !isMoney ? result + dotSuffixResult : result + '元' + dotSuffixResult;
