@@ -148,6 +148,16 @@
                     // 删掉最大单位后面的数，后面已经排序完毕
                     let num = numPrefixSplit.slice(index).reverse().join('');
                     let arr = dealMaxunitResult(num, resultArr, maxUnit, zhArr, isMoney, numPrefixSplit.slice(0, index).reverse());
+                    //这里同样要判断零条件，和最后结果判断一致，因为这里是最大单位后面的部分，不判断可能存在多个零情况，开头零不判断，有xxx零xxx
+                    let resultArrJoin = resultArr.reverse().join('');
+                    // 如果有多位相邻的零，只写一个零即可
+                    resultArrJoin = resultArrJoin.replace(/零+/g, '零');
+                    //这里零判断同上
+                    if (resultArrJoin !== '零') {
+                        // 如果以零结尾，可省略
+                        resultArrJoin = resultArrJoin.replace(/零$/g, '');
+                    }
+                    resultArr = [resultArrJoin];
                     resultArr.push(arr)
                     break;
                 }
