@@ -262,7 +262,7 @@
 
 
                 let intNumCh = numberTransformCh(intNum, isMoney);
-                //应为人民币结果会自动返回元，所以这里会返回一个汉字元，这里多余，去掉。
+                //因为人民币结果会自动返回元，所以这里会返回一个汉字元，这里多余，去掉。
                 if(isMoney){
                     intNumCh = String(intNumCh).replace(/元/g,'');
                 }
@@ -270,7 +270,7 @@
                 dotNum.split('').forEach(item => {
                     dotNumCh = dotNumCh + zhArr[Number(item)]
                 })
-                // 如果以零结尾，可省略
+                // 小数点后以多个零结尾，可省略
                 dotNumCh = dotNumCh.replace(/零+$/g, '');
 
 
@@ -280,23 +280,14 @@
 
                 /***
                  * 拼接最终单位，整数部分加点加小数部分再加最终单位
-                 * 在调用此方法前没有拼接单位，看上面调用，所以要加
-                 * 点根据数组长度判断，只有大于1才代表有小数部分，加点，并且小数不能都是0，如果都是0点可省略
+                 * 
+                 * 点根据数组长度判断，只有大于1才代表有小数部分，加点，并且小数部分不能都是0，如果都是0点可省略
                  */
 
                 let maxUnitResult = intNumCh + (maxNumArr.length > 1 && dotNum != 0 ? '点' : '') + dotNumCh + finalUnit;
                 console.log(maxUnitResult);
                 return [maxUnitResult]
             }
-            //处理最大单位的拼接
-            function dealMaxunitCount() {
-                if (i - step >= 0) {
-                    arr = dotNumPrefix.slice(i - step, i);
-                } else {
-                    arr = dotNumPrefix.slice(0, i);
-                }
-            }
-
 
         }
 
