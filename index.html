@@ -13,8 +13,7 @@
             font-size: 16px;
         }
 
-        #result,
-        #money {
+        span {
             margin: 20px;
             display: inline-block;
             color: brown;
@@ -34,19 +33,32 @@
     转换中文：<span id="result"></span>
     <br>
     转换人民币（小数点只取后两位）：<span id="money"></span>
+    <br>
+    转换中文（最大单位亿）：<span id="maxUnit"></span>
+    <br>
+    转换人民币（最大单位亿）：<span id="maxUnitMoney"></span>
 
     <script>
         //数字转变中文
         function numTranslateCh() {
             let numVal = document.getElementById('number').value;//获取数字，
             let numCh = numberTransformCh(numVal);
-            let money = numberTransformCh(numVal, true);
-
             document.getElementById("result").innerHTML = numCh || '';
+
+            let money = numberTransformCh(numVal, true);
             document.getElementById("money").innerHTML = money || '';
+
+            let maxUnit = numberTransformCh(numVal, false, '亿');
+            document.getElementById("maxUnit").innerHTML = maxUnit || '';
+
+            let maxUnitMoney = numberTransformCh(numVal, true, '亿');
+            document.getElementById("maxUnitMoney").innerHTML = maxUnitMoney || '';
         }
 
-        function numberTransformCh(number, isMoney) {
+        function numberTransformCh(num, money, unit) {
+            let number = num || '';
+            let isMoney = money || false;
+            let maxUnit = unit || ''
             if (!number) {
                 alert("不能为空")
                 return;
@@ -63,11 +75,26 @@
             let zhArr = !isMoney ? ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'] : ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖']; // 数字对应中文
             let baseArr = !isMoney ? ['', '十', '百', '千'] : ['', '拾', '佰', '仟']; //单位转变规律，每隔一千，换个单位，个位空
             let unitArr = ['', '万', '亿', '兆', '京', '垓', '秭', '穰', '沟', '涧', '正', '载', '极', '恒河沙', '阿僧祗', '那由他'];//单位递增规律，每隔千一进制，第一个为个位（个十百千），空
+            let maxUnitStatus = false;//判断单位是否匹配正确
 
             let maxLength = unitArr.length * baseArr.length;
             if (String(number).length > maxLength) {
                 alert("目前支持" + maxLength + "位以内数字")
                 return;
+            }
+
+            if (maxUnit) {
+                //判断所有单位是否存在，个十百千万亿.....
+                if (baseArr.includes(maxUnit) || unitArr.includes(maxUnit)) {
+                    //判断最小单位，最小到万
+                    if (baseArr.includes(maxUnit) || unitArr.indexOf(maxUnit) < 1) {
+                        console.error("参数错误：" + maxUnit + "，单位最小仅支持万，注意单位精度！！！");
+                    } else {
+                        maxUnitStatus = true; //单位正确，规则匹配true，下面判断用
+                    }
+                } else {
+                    console.error("参数错误：" + maxUnit + "，单位不存在，注意支持单位精度！！！");
+                }
             }
 
             //判断是否有小数点
@@ -97,8 +124,10 @@
             console.log(numPrefixSplit)
 
             let resultArr = [];
+            numPrefixSplit = numPrefixSplit.reverse();
             //按照拆分的四位数进行倒序转换，为了索引和上面的unitArr单位索引相对应
-            numPrefixSplit.reverse().forEach((item, index) => {
+            for (let index = 0; index < numPrefixSplit.length; index++) {
+                const item = numPrefixSplit[index];
                 let elResult = item.split('').reverse().map((el, i) => {
                     /**
                      * 索引为0的即个位数，直接转换对应汉字，或者自身值就是0，也不拼接单位，直接转换汉字零（因为没有零十，零百，零千）
@@ -108,6 +137,17 @@
                     // console.log(el);
                     return el;
                 }).reverse().join(''); // 倒叙回来数组，拼接成字符串
+
+                /**
+                * 如果有最大单位，且存在，那就判断要追加的单位是否是最大单位，如果是，就要对最大单位处理，同时跳出循环。
+                */
+                if (maxUnitStatus && unitArr[index] === maxUnit) {
+                    // 删掉最大单位后面的数，后面已经排序完毕
+                    let num = numPrefixSplit.slice(index).reverse().join('');
+                    let arr = dealMaxunitResult(num, resultArr, maxUnit, zhArr, isMoney, numPrefixSplit.slice(0, index).reverse());
+                    resultArr.push(arr)
+                    break;
+                }
 
                 // 如果以一十开头，可以改为十，人民币同理
                 elResult = !isMoney ? elResult.replace(/^一十/g, '十') : elResult.replace(/^壹拾/g, '拾');
@@ -121,26 +161,36 @@
                     // elResult = elResult.replace(/^零/, ''); // 如果以零开头，可省略，这里是内项，不要判断此条件，有可能会有xxx零x的情况，最后结果判断即可。
                     // 如果以零结尾，可省略
                     elResult = elResult.replace(/零$/g, '');
-                    //单位追加，同上
+                    //单位追加同上
                     elResult = elResult + unitArr[index]
                 }
 
                 resultArr.push(elResult)
 
-            });
+            }
+
             //最终结果数组倒转即正确顺序，转为字符串。
             result = resultArr.reverse().join('');
             // 如果以一十开头，可以改为十
             result = !isMoney ? result.replace(/^一十/g, '十') : result.replace(/^壹拾/g, '拾');
-            // 如果有多位相邻的零，只写一个零即可
-            result = result.replace(/零+/g, '零');
-            //这里零判断同上
-            if (result !== '零') {
-                // 如果以零开头，可省略
-                result = result.replace(/^零/g, '');
-                // 如果以零结尾，可省略
-                result = result.replace(/零$/g, '');
+            if (!maxUnitStatus) {
+                // 如果有多位相邻的零，只写一个零即可
+                result = result.replace(/零+/g, '零');
+                //这里零判断同上
+                if (result !== '零') {
+                    // 如果以零开头，可省略
+                    result = result.replace(/^零/g, '');
+                    // 如果以零结尾，可省略
+                    result = result.replace(/零$/g, '');
+                }
+            } else {
+                // 这里是有最大单位的时候判断，前面多个零省略，后面多零结尾省略
+                // 如果以多零开头，简写为一个零
+                result = result.replace(/^零+/g, '');
+                // 如果以多零结尾，可省略
+                result = result.replace(/零+$/g, '');
             }
+
 
             //以上小数点前面的处理完毕，小数点后就对应转中文即可
             let dotSuffixResult = '';
@@ -166,8 +216,87 @@
             console.log("----------");
             console.log(resultArr);
             console.log(result);
-
             return result;
+
+            /**
+             * 
+             * 处理最大单位的数据
+             * 
+             * */
+            function dealMaxunitResult(num, elResult, maxUnit, zhArr, isMoney, numLast) {
+                // 根据单位自动计算此单位后面有几个零。万就是四个零，亿八个零.....
+                let stepCount = unitArr.indexOf(maxUnit) * baseArr.length;
+                // 计算最大单位除数，比如万就是10000......
+                let divisor = Math.pow(10, stepCount);
+
+                let intNum = '';//整除的整数部分
+                let dotNum = '';//整除的剩余部分，余数，也就是小数
+                let finalUnit = '';//单位拼接，需要多少个maxUnit
+
+                let maxNumArr = [];
+                //数字从后向前每stepCount位一拆分，maxUnit都是整数，maxUnit单位对应几个零，小数点左移几位
+                for (let i = num.length; i > 0; i = i - stepCount) {
+                    let item = ''
+                    if (i - stepCount >= 0) {
+                        item = num.slice(i - stepCount, i);
+                    } else {
+                        item = num.slice(0, i);
+                    }
+                    maxNumArr.unshift(item);
+                }
+                //以上得到根据最大单位拆分得到的数组，除了第一个项目代表整数部分，后面被整除的都是小数，所以整数重新获取，小数循环拼接
+
+                //循环拿到的拆分数组，有几次循环代表有几个maxUnit单位
+                maxNumArr.forEach((item, index) => {
+                    finalUnit = finalUnit + maxUnit;
+                    if (index == 0) {
+                        intNum = item;
+                    } else {
+                        dotNum = dotNum + item;
+                    }
+                })
+
+                console.log("intNum:" + intNum);
+                console.log("dotNum:" + dotNum);
+                console.log("finalUnit:" + finalUnit);
+
+
+                let intNumCh = numberTransformCh(intNum, isMoney);
+                //应为人民币结果会自动返回元，所以这里会返回一个汉字元，这里多余，去掉。
+                if(isMoney){
+                    intNumCh = String(intNumCh).replace(/元/g,'');
+                }
+                let dotNumCh = '';
+                dotNum.split('').forEach(item => {
+                    dotNumCh = dotNumCh + zhArr[Number(item)]
+                })
+                // 如果以零结尾，可省略
+                dotNumCh = dotNumCh.replace(/零+$/g, '');
+
+
+                console.log("intNumCh:" + intNumCh);
+                console.log("dotNumCh:" + dotNumCh);
+                console.log("finalUnit:" + finalUnit);
+
+                /***
+                 * 拼接最终单位，整数部分加点加小数部分再加最终单位
+                 * 在调用此方法前没有拼接单位，看上面调用，所以要加
+                 * 点根据数组长度判断，只有大于1才代表有小数部分，加点，并且小数不能都是0，如果都是0点可省略
+                 */
+
+                let maxUnitResult = intNumCh + (maxNumArr.length > 1 && dotNum != 0 ? '点' : '') + dotNumCh + finalUnit;
+                console.log(maxUnitResult);
+                return [maxUnitResult]
+            }
+            //处理最大单位的拼接
+            function dealMaxunitCount() {
+                if (i - step >= 0) {
+                    arr = dotNumPrefix.slice(i - step, i);
+                } else {
+                    arr = dotNumPrefix.slice(0, i);
+                }
+            }
+
 
         }
 
