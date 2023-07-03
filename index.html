@@ -58,7 +58,17 @@
         function numberTransformCh(num, money, unit) {
             let number = num || '';
             let isMoney = money || false;
-            let maxUnit = unit || ''
+            let maxUnit = unit || '';
+
+            let result = '';
+            let dotNumPrefix = ''; //小数点之前的数
+            let dotNumSuffix = ''; //小数点之后的数
+            let zhArr = !isMoney ? ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'] : ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖']; // 数字对应中文
+            let baseArr = !isMoney ? ['', '十', '百', '千'] : ['', '拾', '佰', '仟']; //单位转变规律，每隔一千，换个单位，个位空
+            let unitArr = ['', '万', '亿', '兆', '京', '垓', '秭', '穰', '沟', '涧', '正', '载', '极', '恒河沙', '阿僧祗', '那由他'];//单位递增规律，每隔千一进制，第一个为个位（个十百千），空
+            let maxUnitStatus = false;//判断单位是否匹配正确
+
+            
             if (!number) {
                 alert("不能为空")
                 return;
@@ -67,15 +77,6 @@
                 alert("请输入数字")
                 return;
             }
-
-            let numString = String(number).trim(); //数字转换为字符串
-            let result = '';
-            let dotNumPrefix = ''; //小数点之前的数
-            let dotNumSuffix = ''; //小数点之后的数
-            let zhArr = !isMoney ? ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'] : ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖']; // 数字对应中文
-            let baseArr = !isMoney ? ['', '十', '百', '千'] : ['', '拾', '佰', '仟']; //单位转变规律，每隔一千，换个单位，个位空
-            let unitArr = ['', '万', '亿', '兆', '京', '垓', '秭', '穰', '沟', '涧', '正', '载', '极', '恒河沙', '阿僧祗', '那由他'];//单位递增规律，每隔千一进制，第一个为个位（个十百千），空
-            let maxUnitStatus = false;//判断单位是否匹配正确
 
             let maxLength = unitArr.length * baseArr.length;
             if (String(number).length > maxLength) {
@@ -96,6 +97,8 @@
                     console.error("参数错误：" + maxUnit + "，单位不存在，注意支持单位精度！！！");
                 }
             }
+
+            let numString = String(number).trim(); //数字转换为字符串
 
             //判断是否有小数点
             if (numString.includes('.')) {
