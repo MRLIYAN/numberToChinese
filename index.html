@@ -256,7 +256,7 @@
                 // 根据单位自动计算此单位后面有几个零。万就是四个零，亿八个零.....
                 let stepCount = unitArr.indexOf(maxUnit) * baseArr.length;
                 // 计算最大单位除数，比如万就是10000......
-                let divisor = Math.pow(10, stepCount);
+                // let divisor = Math.pow(10, stepCount);
 
                 let intNum = '';//整除的整数部分
                 let dotNum = '';//整除的剩余部分，余数，也就是小数
