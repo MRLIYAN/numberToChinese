@@ -162,8 +162,7 @@
                     break;
                 }
 
-                // 如果以一十开头，可以改为十，人民币同理
-                elResult = !isMoney ? elResult.replace(/^一十/g, '十') : elResult.replace(/^壹拾/g, '拾');
+                
                 // 如果有多位相邻的零，只写一个零即可
                 elResult = elResult.replace(/零+/g, '零');
                 /**
@@ -177,6 +176,8 @@
                     //单位追加同上
                     elResult = elResult + unitArr[index]
                 }
+                // 如果以一十开头，可以改为十，人民币同理
+                elResult = !isMoney ? elResult.replace(/^一十/g, '十') : elResult.replace(/^壹拾/g, '拾');
 
                 resultArr.push(elResult)
 
