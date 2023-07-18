@@ -197,10 +197,13 @@
                     result = result.replace(/零$/g, '');
                 }
             } else {
-                // 这里是有最大单位的时候判断，前面多个零省略，后面多零结尾省略
-                result = result.replace(/^零+/g, '');
-                // 如果以多零结尾，可省略
-                result = result.replace(/零+$/g, '');
+                if(result != '零'){
+                    // 这里是有最大单位的时候判断，前面多个零省略，后面多零结尾省略
+                    result = result.replace(/^零+/g, '');
+                    // 如果以多零结尾，可省略
+                    result = result.replace(/零+$/g, '');
+                }
+               
             }
 
 
