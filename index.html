@@ -229,6 +229,8 @@
                 }
 
             }
+            // 小数点末尾后的零，可省略，没意义
+            dotSuffixResult = dotSuffixResult.replace(/零+$/g, '');
 
             result = !isMoney ? result + dotSuffixResult : result + '元' + dotSuffixResult;
             console.log("----------");
@@ -292,7 +294,7 @@
                 dotNum.split('').forEach(item => {
                     dotNumCh = dotNumCh + zhArr[Number(item)]
                 })
-                // 小数点后以多个零结尾，可省略
+                // 小数点末尾后的零，可省略，没意义
                 dotNumCh = dotNumCh.replace(/零+$/g, '');
 
 
