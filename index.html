@@ -68,6 +68,7 @@
             let unitArr = ['', '万', '亿', '兆', '京', '垓', '秭', '穰', '沟', '涧', '正', '载', '极', '恒河沙', '阿僧祗', '那由他'];//单位递增规律，每隔千一进制，第一个为个位（个十百千），空
             let maxUnitStatus = false;//判断单位是否匹配正确
 
+            let numString = String(number).trim(); //数字转换为字符串
             
             if (!number) {
                 alert("不能为空")
@@ -79,10 +80,17 @@
             }
 
             let maxLength = unitArr.length * baseArr.length;
-            if (String(number).length > maxLength) {
+            let numLength = 0;
+            if(numString.includes('.')){
+                numLength = numString.split('.')[0].length
+            }else{
+                numLength = numString.length;
+            }
+            if (numLength > maxLength) {
                 alert("目前支持" + maxLength + "位以内数字")
                 return;
             }
+            
 
             if (maxUnit) {
                 //判断所有单位是否存在，个十百千万亿.....
@@ -98,7 +106,6 @@
                 }
             }
 
-            let numString = String(number).trim(); //数字转换为字符串
 
             //判断是否有小数点
             if (numString.includes('.')) {
