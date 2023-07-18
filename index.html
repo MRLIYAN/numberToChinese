@@ -80,12 +80,7 @@
             }
 
             let maxLength = unitArr.length * baseArr.length;
-            let numLength = 0;
-            if(numString.includes('.')){
-                numLength = numString.split('.')[0].length
-            }else{
-                numLength = numString.length;
-            }
+            let numLength = numString.includes('.') ? numString.split('.')[0].length : numString.length;
             if (numLength > maxLength) {
                 alert("目前支持" + maxLength + "位以内数字")
                 return;
