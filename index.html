@@ -223,8 +223,8 @@
                 // 非人民币金额，直接循环转对应中文
                 if (!isMoney) {
                     //判断小数点后面的值是否全是零，只有不是零的才处理,全为零则置空，去除上面的赋值的点，防止出bug
-                    let bothLing = dotNumSuffixArr.some(item => item != '0')
-                    if(bothLing) {
+                    let noBothLing = dotNumSuffixArr.some(item => item != '0')
+                    if(noBothLing) {
                         dotNumSuffixArr.forEach(item => {
                             dotSuffixResult = dotSuffixResult + zhArr[Number(item)]
                         })
