@@ -77,8 +77,8 @@
                 alert("不能为空")
                 return;
             }
-            if (isNaN(number)) {
-                alert("请输入数字")
+            if (!/^[+-]?\d+(\.\d+)?$/.test(number)) {
+                alert("请输入合法数字")
                 return;
             }
 
