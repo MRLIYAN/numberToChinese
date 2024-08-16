@@ -217,9 +217,6 @@
 
             //以上小数点前面的处理完毕，小数点后就对应转中文即可
             let dotSuffixResult = '';
-            console.log("===============hhhhhhhhh======================");
-            console.log(dotNumSuffix);
-            console.log(dotNumSuffix.length);
             if (dotNumSuffix.length > 0 ) {
                 dotSuffixResult = !isMoney ? '点' : '';
                 let dotNumSuffixArr = dotNumSuffix.split('')
@@ -234,9 +231,7 @@
                     }else {
                         dotSuffixResult = ''
                     }
-                    console.log("===============bbbbbbb======================");
-                    console.log(dotSuffixResult);
-                    console.log(bothLing);
+                    
                 } else {
                     let dotSuffixMoneyUnit = ['角', '分']
                     //人民币金额只要前两位
