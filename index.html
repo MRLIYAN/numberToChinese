@@ -27,7 +27,7 @@
 </head>
 
 <body>
-    请输入数字：<input id="number" type="text">
+    请输入数字（支持正负数字）：<input id="number" type="text">
     <input id="btn" type="button" value="点击转换" onclick="numTranslateCh()" />
     <br>
     转换中文：<span id="result"></span>
@@ -70,6 +70,9 @@
             // 单位递增规律，每隔千一进制，第一个为个位（个十百千），空
             let unitArr = ['', '万', '亿', '兆', '京', '垓', '秭', '穰', '沟', '涧', '正', '载', '极', '恒河沙', '阿僧祗', '那由他'];
             let maxUnitStatus = false;//判断单位是否匹配正确
+            let numIsSign = false; //判断数字里面是否包含正负号。
+            let numSign = ''; //保存正负号的符号。
+
 
             let numString = String(number).trim(); //数字转换为字符串
             
@@ -80,6 +83,13 @@
             if (!/^[+-]?\d+(\.\d+)?$/.test(number)) {
                 alert("请输入合法数字")
                 return;
+            }
+
+            //判断数字是否带有正负号。
+            if(numString.includes('+') || numString.includes('-')){
+                numIsSign = true;
+                numSign = numString.slice(0,1);
+                numString = numString.slice(1);
             }
 
             let maxLength = unitArr.length * baseArr.length;
@@ -244,7 +254,15 @@
             // 小数点末尾后的零，可省略，没意义
             dotSuffixResult = dotSuffixResult.replace(/零+$/g, '');
 
+            //判断数字是否带正负号，+ 默认去除正字。零也去除所有正负号，零就是零
+            let numSignCh = '';
+            if(numIsSign) {
+                numSignCh = numSign === '-' && result != '零' ? '负' : '';
+            }
+
             result = !isMoney ? result + dotSuffixResult : result + '元' + dotSuffixResult;
+            result = numSignCh + result;
+
             console.log("----------");
             console.log(resultArr);
             console.log(result);
